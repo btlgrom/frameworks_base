@@ -13810,6 +13810,12 @@ public final class Settings {
                 "power_button_very_long_press";
 
         /**
+         * This preference enables showing the power menu on LockScreen.
+         * @hide
+         */
+        public static final String LOCKSCREEN_ENABLE_POWER_MENU = "lockscreen_enable_power_menu";
+
+        /**
          * Global settings that shouldn't be persisted.
          *
          * @hide
