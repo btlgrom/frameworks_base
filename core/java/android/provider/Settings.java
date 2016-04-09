@@ -5151,6 +5151,12 @@ public final class Settings {
          */
         public static final String SHOW_VOLTE_ICON = "show_volte_icon";
 
+       /**
+        * Defines the global heads up notification snooze
+        * @hide
+        */
+        public static final String HEADS_UP_NOTIFICATION_SNOOZE = "heads_up_notification_snooze";
+
         /**
          * These are all public system settings
          *
@@ -5289,6 +5295,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DATA_DISABLED_ICON);
             PRIVATE_SETTINGS.add(TOAST_ICON);
             PRIVATE_SETTINGS.add(SHOW_VOLTE_ICON);
+            PRIVATE_SETTINGS.add(HEADS_UP_NOTIFICATION_SNOOZE);
         }
 
         /**
