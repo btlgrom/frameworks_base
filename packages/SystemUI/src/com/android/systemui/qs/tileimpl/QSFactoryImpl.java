@@ -43,6 +43,7 @@ import com.android.systemui.qs.tiles.HeadphonesBuddyTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.HeadsUpTile;
 import com.android.systemui.qs.tiles.LocationTile;
+import com.android.systemui.qs.tiles.LiveDisplayTile;
 import com.android.systemui.qs.tiles.NfcTile;
 import com.android.systemui.qs.tiles.NightDisplayTile;
 import com.android.systemui.qs.tiles.RotationLockTile;
@@ -94,6 +95,7 @@ public class QSFactoryImpl implements QSFactory {
     private final Provider<HeadsUpTile> mHeadsUpTileProvider;
     private final Provider<UsbTetherTile> mUsbTetherTileProvider;
     private final Provider<AODTile> mAODTileProvider;
+    private final Provider<LiveDisplayTile> mLiveDisplayTileProvider;
     private final Provider<WeatherTile> mWeatherTileProvider;
 
     private final Lazy<QSHost> mQsHostLazy;
@@ -127,6 +129,7 @@ public class QSFactoryImpl implements QSFactory {
             Provider<HeadsUpTile> headsupTileProvider,
             Provider<UsbTetherTile> usbTetherTileProvider,
             Provider<AODTile> aodTileProvider,
+            Provider<LiveDisplayTile> liveDisplayTileProvider,
             Provider<WeatherTile> weatherTileProvider) {
         mQsHostLazy = qsHostLazy;
         mWifiTileProvider = wifiTileProvider;
@@ -156,6 +159,7 @@ public class QSFactoryImpl implements QSFactory {
         mHeadsUpTileProvider = headsupTileProvider;
         mUsbTetherTileProvider = usbTetherTileProvider;
         mAODTileProvider = aodTileProvider;
+        mLiveDisplayTileProvider = liveDisplayTileProvider;
         mWeatherTileProvider = weatherTileProvider;
     }
 
@@ -224,6 +228,8 @@ public class QSFactoryImpl implements QSFactory {
                 return mUsbTetherTileProvider.get();
             case "aod":
                 return mAODTileProvider.get();
+            case "livedisplay":
+                return mLiveDisplayTileProvider.get();
             case "weather":
                 return mWeatherTileProvider.get();
         }
