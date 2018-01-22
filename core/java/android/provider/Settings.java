@@ -5128,6 +5128,12 @@ public final class Settings {
         public static final String ROAMING_INDICATOR_ICON = "roaming_indicator_icon";
 
         /**
+         * Whether to display the 4g or lte network icon in the statusbar
+         * @hide
+         */
+        public static final String SHOW_LTE_FOURGEE = "show_lte_fourgee";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -5261,6 +5267,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_PICTURE_ADJUSTMENT);
             PRIVATE_SETTINGS.add(LIVE_DISPLAY_HINTED);
             PRIVATE_SETTINGS.add(ROAMING_INDICATOR_ICON);
+            PRIVATE_SETTINGS.add(SHOW_LTE_FOURGEE);
         }
 
         /**
