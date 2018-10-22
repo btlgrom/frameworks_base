@@ -5146,6 +5146,12 @@ public final class Settings {
         public static final String TOAST_ICON = "toast_icon";
 
         /**
+         * Whether to display VoLTE icon when VoLTE present
+         * @hide
+         */
+        public static final String SHOW_VOLTE_ICON = "show_volte_icon";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -5282,6 +5288,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SHOW_LTE_FOURGEE);
             PRIVATE_SETTINGS.add(DATA_DISABLED_ICON);
             PRIVATE_SETTINGS.add(TOAST_ICON);
+            PRIVATE_SETTINGS.add(SHOW_VOLTE_ICON);
         }
 
         /**
