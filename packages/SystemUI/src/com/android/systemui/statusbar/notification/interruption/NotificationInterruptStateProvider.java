@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar.notification.interruption;
 
 import com.android.systemui.statusbar.notification.collection.NotificationEntry;
+import java.util.ArrayList;
 
 /**
  * Provides bubble-up and heads-up state for notification entries.
@@ -56,4 +57,9 @@ public interface NotificationInterruptStateProvider {
      * Add a component that can suppress visual interruptions.
      */
     void addSuppressor(NotificationInterruptSuppressor suppressor);
+
+    /**
+     * Limit notifications using a blacklist.
+     */
+    void setHeadsUpBlacklist(ArrayList<String> arrayList);
 }

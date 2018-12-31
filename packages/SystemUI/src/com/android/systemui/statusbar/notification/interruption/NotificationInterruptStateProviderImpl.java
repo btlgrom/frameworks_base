@@ -78,6 +78,8 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
     @VisibleForTesting
     protected boolean mUseHeadsUp = false;
 
+    private ArrayList<String> mHeadsUpBlacklist = new ArrayList<String>();
+
     @Inject
     public NotificationInterruptStateProviderImpl(
             Context context,
@@ -363,6 +365,11 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
     private boolean canAlertCommon(NotificationEntry entry) {
         StatusBarNotification sbn = entry.getSbn();
 
+        // check if package is blacklisted first
+        if (isPackageBlacklisted(sbn.getPackageName())) {
+            return false;
+        }
+
         if (mNotificationFilter.shouldFilterOut(entry)) {
             if (DEBUG || DEBUG_HEADS_UP) {
                 Log.d(TAG, "No alerting: filtered notification: " + sbn.getKey());
@@ -421,5 +428,14 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
 
     private boolean isSnoozedPackage(StatusBarNotification sbn) {
         return mHeadsUpManager.isSnoozed(sbn.getPackageName());
+    }
+
+    @Override
+    public void setHeadsUpBlacklist(ArrayList<String> arrayList) {
+            mHeadsUpBlacklist = arrayList;
+    }
+
+    private boolean isPackageBlacklisted(String packageName) {
+        return mHeadsUpBlacklist.contains(packageName);
     }
 }
