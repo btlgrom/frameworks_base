@@ -417,6 +417,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     // settings
     private QSPanel mQSPanel;
+    private QuickStatusBarHeader mQuickStatusBarHeader;
 
     KeyguardIndicationController mKeyguardIndicationController;
 
@@ -714,6 +715,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PULSE_AMBIENT_LIGHT),
                     false, this, UserHandle.USER_ALL);
+            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.OMNI_STATUS_BAR_CUSTOM_HEADER),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -739,6 +743,11 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.PULSE_AMBIENT_LIGHT))) {
                 updatePulseAmbientLight();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.OMNI_STATUS_BAR_CUSTOM_HEADER))) {
+                if (mQuickStatusBarHeader != null) {
+                    mQuickStatusBarHeader.updateSettings();
+                }
             } else {
                 update();
             }
@@ -1383,6 +1392,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 if (qs instanceof QSFragment) {
                     mQSBarHeader = ((QSFragment) qs).getHeader();
                     mQSPanel = ((QSFragment) qs).getQsPanel();
+                    mQuickStatusBarHeader = ((QSFragment) qs).getQuickStatusBarHeader();
                     mQSPanel.setBrightnessMirror(mBrightnessMirrorController);
                 }
             });
