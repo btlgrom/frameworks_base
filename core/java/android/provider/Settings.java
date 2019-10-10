@@ -5215,6 +5215,19 @@ public final class Settings {
         public static final String VISUALIZER_CENTER_MIRRORED = "visualizer_center_mirrored";
 
         /**
+         * Whether to enable Ambient edge light
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT = "pulse_ambient_light";
+
+        /**
+        /**
+         * What color to use for Ambient edge light
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT_COLOR = "pulse_ambient_light_color";
+
+        /**
          * These are all public system settings
          *
          * @hide
