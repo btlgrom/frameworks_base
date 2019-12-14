@@ -5233,6 +5233,12 @@ public final class Settings {
         public static final String PULSE_AMBIENT_LIGHT_DURATION = "pulse_ambient_light_duration";
 
         /**
+         * Whether to use color from wallpaper for Ambient edge light
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT_AUTO_COLOR = "pulse_ambient_light_auto_color";
+
+        /**
          * These are all public system settings
          *
          * @hide
