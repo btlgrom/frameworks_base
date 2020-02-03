@@ -5239,6 +5239,13 @@ public final class Settings {
         public static final String PULSE_AMBIENT_LIGHT_AUTO_COLOR = "pulse_ambient_light_auto_color";
 
         /**
+         * Number of times to repeat animations of Ambient edge light
+         * 0 is infinite
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT_REPEAT_COUNT = "pulse_ambient_light_repeat_count";
+
+        /**
          * These are all public system settings
          *
          * @hide
