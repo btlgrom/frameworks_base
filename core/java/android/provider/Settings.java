@@ -5254,6 +5254,11 @@ public final class Settings {
         public static final String PULSE_AMBIENT_LIGHT_REPEAT_DIRECTION = "pulse_ambient_light_repeat_direction";
 
         /**
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT_COLOR_AUTOMATIC = "pulse_ambient_light_color_automatic";
+
+        /**
          * These are all public system settings
          *
          * @hide
