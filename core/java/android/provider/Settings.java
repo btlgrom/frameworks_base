@@ -5259,6 +5259,12 @@ public final class Settings {
         public static final String PULSE_AMBIENT_LIGHT_COLOR_AUTOMATIC = "pulse_ambient_light_color_automatic";
 
         /**
+         * Width of Ambient edge light in px
+         * @hide
+         */
+        public static final String PULSE_AMBIENT_LIGHT_WIDTH = "pulse_ambient_light_width";
+
+        /**
          * These are all public system settings
          *
          * @hide
