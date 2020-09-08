@@ -27,6 +27,7 @@ import com.android.systemui.plugins.qs.QSTileView;
 import com.android.systemui.qs.QSHost;
 import com.android.systemui.qs.external.CustomTile;
 import com.android.systemui.qs.tiles.AirplaneModeTile;
+import com.android.systemui.qs.tiles.AntiFlickerTile;
 import com.android.systemui.qs.tiles.AODTile;
 import com.android.systemui.qs.tiles.BatterySaverTile;
 import com.android.systemui.qs.tiles.BluetoothTile;
@@ -97,6 +98,7 @@ public class QSFactoryImpl implements QSFactory {
     private final Provider<AODTile> mAODTileProvider;
     private final Provider<LiveDisplayTile> mLiveDisplayTileProvider;
     private final Provider<WeatherTile> mWeatherTileProvider;
+    private final Provider<AntiFlickerTile> mAntiFlickerTileProvider;
 
     private final Lazy<QSHost> mQsHostLazy;
 
@@ -130,7 +132,8 @@ public class QSFactoryImpl implements QSFactory {
             Provider<UsbTetherTile> usbTetherTileProvider,
             Provider<AODTile> aodTileProvider,
             Provider<LiveDisplayTile> liveDisplayTileProvider,
-            Provider<WeatherTile> weatherTileProvider) {
+            Provider<WeatherTile> weatherTileProvider,
+            Provider<AntiFlickerTile> antiFlickerTileProvider) {
         mQsHostLazy = qsHostLazy;
         mWifiTileProvider = wifiTileProvider;
         mBluetoothTileProvider = bluetoothTileProvider;
@@ -161,6 +164,7 @@ public class QSFactoryImpl implements QSFactory {
         mAODTileProvider = aodTileProvider;
         mLiveDisplayTileProvider = liveDisplayTileProvider;
         mWeatherTileProvider = weatherTileProvider;
+        mAntiFlickerTileProvider = antiFlickerTileProvider;
     }
 
     public QSTile createTile(String tileSpec) {
@@ -232,6 +236,8 @@ public class QSFactoryImpl implements QSFactory {
                 return mLiveDisplayTileProvider.get();
             case "weather":
                 return mWeatherTileProvider.get();
+            case "anti_flicker":
+                return mAntiFlickerTileProvider.get();
         }
 
         // Custom tiles
