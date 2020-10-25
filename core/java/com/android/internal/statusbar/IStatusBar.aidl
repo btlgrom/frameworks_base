@@ -238,4 +238,10 @@ oneway interface IStatusBar
      */
     void showInDisplayFingerprintView();
     void hideInDisplayFingerprintView();
+
+    /**
+     * Pulse
+     */
+    void screenPinningStateChanged(boolean enabled);
+    void leftInLandscapeChanged(boolean isLeft);
 }

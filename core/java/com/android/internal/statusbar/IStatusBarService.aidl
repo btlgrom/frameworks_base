@@ -158,4 +158,6 @@ interface IStatusBarService
      */
     void showInDisplayFingerprintView();
     void hideInDisplayFingerprintView();
+
+    void screenPinningStateChanged(boolean enabled);
 }
