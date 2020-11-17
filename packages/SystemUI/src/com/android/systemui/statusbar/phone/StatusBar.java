@@ -711,6 +711,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
                     Settings.System.USE_OLD_MOBILETYPE),
                     false, this, UserHandle.USER_ALL);
+            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_AMBIENT_LIGHT),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -733,6 +736,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.USE_OLD_MOBILETYPE))) {
                 setOldMobileType();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.PULSE_AMBIENT_LIGHT))) {
+                updatePulseAmbientLight();
             } else {
                 update();
             }
@@ -748,6 +754,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             setPulseOnNewTracks();
             updateHeadsUpBlackList();
             setOldMobileType();
+            updatePulseAmbientLight();
         }
     }
 
@@ -803,6 +810,15 @@ public class StatusBar extends SystemUI implements DemoMode,
                 Settings.System.USE_OLD_MOBILETYPE, 0,
                 UserHandle.USER_CURRENT) != 0;
         TelephonyIcons.updateIcons(USE_OLD_MOBILETYPE);
+    }
+
+    private void updatePulseAmbientLight() {
+        boolean pulseAmbientLightEnabled = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.PULSE_AMBIENT_LIGHT, 0,
+                UserHandle.USER_CURRENT) == 1;
+        if (mNotificationPanelViewController != null) {
+            mNotificationPanelViewController.setPulseAmbientLight(pulseAmbientLightEnabled);
+        }
     }
 
     /**

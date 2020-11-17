@@ -51,8 +51,6 @@ import android.os.PowerManager;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.os.SystemClock;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.MathUtils;
 import android.view.GestureDetector;
@@ -366,6 +364,7 @@ public class NotificationPanelViewController extends PanelViewController {
     private FalsingManager mFalsingManager;
     private String mLastCameraLaunchSource = KeyguardBottomAreaView.CAMERA_LAUNCH_SOURCE_AFFORDANCE;
     private NotificationLightsView mPulseLightsView;
+    private boolean mPulseLights;
 
     private LockPatternUtils mLockPatternUtils;
     private boolean mStatusBarLockedOnSecureKeyguard;
@@ -3031,8 +3030,6 @@ public class NotificationPanelViewController extends PanelViewController {
         final boolean
                 animatePulse =
                 !mDozeParameters.getDisplayNeedsBlanking() && mDozeParameters.getAlwaysOn();
-        boolean pulseLights = Settings.System.getIntForUser(mView.getContext().getContentResolver(),
-                Settings.System.PULSE_AMBIENT_LIGHT, 0, UserHandle.USER_CURRENT) != 0;
         if (animatePulse) {
             mAnimateNextPositionUpdate = true;
         }
@@ -3041,7 +3038,7 @@ public class NotificationPanelViewController extends PanelViewController {
         if (!mPulsing && !mDozing) {
             mAnimateNextPositionUpdate = false;
         }
-        if ((mPulseLightsView != null) && pulseLights) {
+        if ((mPulseLightsView != null) && mPulseLights) {
             mPulseLightsView.setVisibility(mPulsing ? View.VISIBLE : View.GONE);
             if (mPulsing) {
                 mPulseLightsView.animateNotification();
@@ -3932,5 +3929,9 @@ public class NotificationPanelViewController extends PanelViewController {
 
     public void updateDoubleTapToSleep(boolean doubleTapToSleepEnabled) {
         mDoubleTapToSleepEnabled = doubleTapToSleepEnabled;
+    }
+
+    public void setPulseAmbientLight(boolean pulseAmbientLights) {
+        mPulseLights = pulseAmbientLights;
     }
 }
