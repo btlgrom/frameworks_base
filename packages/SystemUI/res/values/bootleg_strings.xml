@@ -146,4 +146,7 @@
     <string name="systemui_tuner_navbar_title">Stock settings</string>
     <string name="navbar_activity_title">Navigation bar</string>
 
+    <!-- Ambient Music Ticker -->
+    <string name="ambientmusic_songinfo" formatted="false">%s by %s</string>
+
 </resources>
