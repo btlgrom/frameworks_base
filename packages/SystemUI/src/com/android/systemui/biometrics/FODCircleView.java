@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.biometrics.BiometricSourceType;
@@ -131,25 +130,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
             if (mPressPending) {
                 mPressPending = false;
             }
-        }
-
-        @Override
-        public void onBrightnessChanged(int dim) {
-            mHandler.post(() -> {
-                float alpha = dim / 255.0f;
-                mParams.dimAmount = alpha;
-                mPressedParams.dimAmount = alpha;
-                FODCircleView.this.setColorFilter(Color.argb(dim, 0, 0, 0),
-                        PorterDuff.Mode.SRC_ATOP);
-
-                if (mPressedView.getParent() != null) {
-                    mWindowManager.updateViewLayout(mPressedView, mPressedParams);
-                }
-
-                if (FODCircleView.this.getParent() != null) {
-                    mWindowManager.updateViewLayout(FODCircleView.this, mParams);
-                }
-            });
         }
     };
 
@@ -296,8 +276,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         mParams.type = WindowManager.LayoutParams.TYPE_DISPLAY_OVERLAY;
         mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
-                WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
         mParams.gravity = Gravity.TOP | Gravity.LEFT;
 
         mPressedParams.copyFrom(mParams);
@@ -305,8 +284,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
                 WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
 
         mParams.setTitle("Fingerprint on display");
-        mParams.dimAmount = 0.0f;
-        mPressedParams.dimAmount = 0.0f;
         mPressedParams.setTitle("Fingerprint on display.touched");
 
         mPressedView = new ImageView(context)  {
@@ -578,7 +555,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
                 mPressedParams.screenBrightness = 1.0f;
             }
 
-            // mPressedParams.dimAmount = dimAmount / 255.0f;
+            mPressedParams.dimAmount = dimAmount / 255.0f;
             if (mPressedView.getParent() == null) {
                 mWindowManager.addView(mPressedView, mPressedParams);
             } else {
@@ -588,7 +565,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
             if (mShouldBoostBrightness) {
                 mPressedParams.screenBrightness = 0.0f;
             }
-            //mPressedParams.dimAmount = 0.0f;
+            mPressedParams.dimAmount = 0.0f;
             if (mPressedView.getParent() != null) {
                 mWindowManager.removeView(mPressedView);
             }
