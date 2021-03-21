@@ -5193,6 +5193,12 @@ public final class Settings {
         public static final String AMBIENT_MUSIC_TICKER = "ambient_music_ticker";
 
         /**
+         * Set the visualizer to be center mirrored
+         * @hide
+         */
+        public static final String VISUALIZER_CENTER_MIRRORED = "visualizer_center_mirrored";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -9546,6 +9552,12 @@ public final class Settings {
          * @hide
          */
         public static final String PULSE_SMOOTHING_ENABLED = "pulse_smoothing_enabled";
+
+        /**
+         * Pulse gravity
+         * @hide
+         */
+        public static final String PULSE_CUSTOM_GRAVITY = "pulse_custom_gravity";
 
         /**
          * Keys we no longer back up under the current schema, but want to continue to
