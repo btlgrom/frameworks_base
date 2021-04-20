@@ -5306,6 +5306,12 @@ public final class Settings {
                 "status_bar_file_header_image";
 
         /**
+         * Whether StatusBar icons should use app icon instead of the notif icon
+         * @hide
+         */
+        public static final String STATUSBAR_ICONS_STYLE = "statusbar_icons_style";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -5449,6 +5455,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(CHOOSER_ACTIVITY_BLACKLIST);
             PRIVATE_SETTINGS.add(OMNI_LOCKSCREEN_MEDIA_BLUR);
             PRIVATE_SETTINGS.add(USE_OLD_MOBILETYPE);
+            PRIVATE_SETTINGS.add(STATUSBAR_ICONS_STYLE);
         }
 
         /**
