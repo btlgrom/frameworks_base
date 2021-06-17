@@ -17,6 +17,7 @@
 package com.android.internal.util.bootleggers;
 
 import android.app.ActivityManager;
+import android.app.IUiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -277,6 +278,18 @@ public class BootlegUtils {
      */
     public static boolean supportsBlur() {
         return mBlurSupportedSysProp && !mBlurDisabledSysProp && ActivityManager.isHighEndGfx();
+    }
+
+    // Check if system is in dark mode
+    public static boolean isDarkMode() {
+        IUiModeManager uiModeManager = IUiModeManager.Stub.asInterface(
+                    ServiceManager.getService(Context.UI_MODE_SERVICE));
+        try {
+            return uiModeManager.getNightMode() == 2;
+        } catch (android.os.RemoteException e) {
+            // assume light mode
+            return false;
+        }
     }
 
     /**
