@@ -73,6 +73,7 @@
 
     <!-- Pocket Service -->
     <java-symbol type="string" name="config_pocketJudgeVendorSensorName" />
+    <java-symbol type="string" name="config_pocketJudgeVendorProximitySensorName" />
 
     <!-- Custom permissions list -->
     <java-symbol type="array" name="config_customPermissionsList" />
