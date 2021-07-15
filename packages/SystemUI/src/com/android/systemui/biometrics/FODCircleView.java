@@ -478,7 +478,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             return;
         }
 
-        if (mIsKeyguard && mUpdateMonitor.getUserCanSkipBouncer(mUpdateMonitor.getCurrentUser())) {
+        if (mUpdateMonitor.getUserCanSkipBouncer(mUpdateMonitor.getCurrentUser())) {
             // Ignore show calls if user can skip bouncer
             return;
         }
