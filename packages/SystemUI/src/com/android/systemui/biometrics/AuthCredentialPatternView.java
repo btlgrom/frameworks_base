@@ -65,8 +65,7 @@ public class AuthCredentialPatternView extends AuthCredentialView {
                 return;
             }
 
-            try (LockscreenCredential credential = LockscreenCredential.createPattern(
-                    pattern, mLockPatternUtils.getLockPatternSize(mUserId))) {
+            try (LockscreenCredential credential = LockscreenCredential.createPattern(pattern)) {
                 mPendingLockCheck = LockPatternChecker.verifyCredential(
                         mLockPatternUtils,
                         credential,
