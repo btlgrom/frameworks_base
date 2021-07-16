@@ -51,8 +51,6 @@ import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
 
-import lineageos.app.LineageContextConstants;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -64,6 +62,7 @@ import java.util.List;
 public abstract class AuthBiometricView extends LinearLayout {
 
     private static final String TAG = "BiometricPrompt/AuthBiometricView";
+    public static final String FOD = "vendor.lineage.biometrics.fingerprint.inscreen";
 
     /**
      * Authentication hardware idle.
@@ -272,8 +271,7 @@ public abstract class AuthBiometricView extends LinearLayout {
         mAccessibilityManager = context.getSystemService(AccessibilityManager.class);
 
         PackageManager packageManager = context.getPackageManager();
-        mHasFod = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) &&
-                packageManager.hasSystemFeature(LineageContextConstants.Features.FOD);
+        mHasFod = mPackageManager.hasSystemFeature(FOD);
 
         mResetErrorRunnable = () -> {
             updateState(getStateForAfterError());

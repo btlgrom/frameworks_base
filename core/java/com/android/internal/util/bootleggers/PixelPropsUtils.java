@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.internal.util.lineage;
+package com.android.internal.util.bootleggers;
 
 import android.os.Build;
 import android.util.Log;

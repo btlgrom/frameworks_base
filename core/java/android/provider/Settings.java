@@ -5050,6 +5050,12 @@ public final class Settings {
         public static final String NOTIFICATION_HEADERS = "notification_headers";
 
         /**
+         * fod screen off
+         * @hide
+         */
+        public static final String FOD_GESTURE = "fod_gesture";
+
+        /**
          * fod animation
          * @hide
          */
@@ -5176,6 +5182,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(VOLUME_PANEL_ON_LEFT);
             PRIVATE_SETTINGS.add(AUTHENTICATION_SUCCESS_VIB);
             PRIVATE_SETTINGS.add(NOTIFICATION_HEADERS);
+            PRIVATE_SETTINGS.add(FOD_GESTURE);
         }
 
         /**
