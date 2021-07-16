@@ -29,11 +29,11 @@ import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.tuner.TunerService;
 
-import lineageos.providers.LineageSettings;
+import android.provider.Settings;
 
 public class FODAnimation extends ImageView implements TunerService.Tunable {
 
-    private final String FOD_RECOGNIZING_ANIMATION = "lineagesystem:" + LineageSettings.System.FOD_RECOGNIZING_ANIMATION;
+    private final String FOD_RECOGNIZING_ANIMATION = "system:" + Settings.System.FOD_RECOGNIZING_ANIMATION;
     private final WindowManager.LayoutParams mAnimParams = new WindowManager.LayoutParams();
 
     private boolean mShowing = false;

@@ -50,7 +50,7 @@ import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.tuner.TunerService;
 
-import lineageos.providers.LineageSettings;
+import import android.provider.Settings;
 
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreen;
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreenCallback;
@@ -62,7 +62,7 @@ import java.util.TimerTask;
 public class FODCircleView extends ImageView implements TunerService.Tunable {
     private static final int FADE_ANIM_DURATION = 125;
     private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
-    private static final String FOD_GESTURE = "lineagesystem:" + LineageSettings.System.FOD_GESTURE;
+    private static final String FOD_GESTURE = "system:" + Settings.System.FOD_GESTURE;
 
     private final int mPositionX;
     private final int mPositionY;

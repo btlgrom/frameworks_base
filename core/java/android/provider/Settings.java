@@ -5050,6 +5050,12 @@ public final class Settings {
         public static final String NOTIFICATION_HEADERS = "notification_headers";
 
         /**
+         * fod animation
+         * @hide
+         */
+        public static final String FOD_RECOGNIZING_ANIMATION = "fod_anim";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -5106,6 +5112,7 @@ public final class Settings {
             PUBLIC_SETTINGS.add(HAPTIC_FEEDBACK_ENABLED);
             PUBLIC_SETTINGS.add(SHOW_WEB_SUGGESTIONS);
             PUBLIC_SETTINGS.add(VIBRATE_WHEN_RINGING);
+            PUBLIC_SETTINGS.add(FOD_RECOGNIZING_ANIMATION);
         }
 
         /**

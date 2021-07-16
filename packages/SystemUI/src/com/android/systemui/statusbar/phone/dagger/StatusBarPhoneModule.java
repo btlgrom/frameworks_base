@@ -201,8 +201,7 @@ public interface StatusBarPhoneModule {
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             DismissCallbackRegistry dismissCallbackRegistry,
             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
-            FlashlightController flashlightController),
-            TunerService tunerService,
+            FlashlightController flashlightController,
             FODCircleViewImpl fodCircleViewImpl) {
         return new StatusBar(
                 context,
@@ -282,8 +281,7 @@ public interface StatusBarPhoneModule {
                 dismissCallbackRegistry,
                 notificationShadeDepthController,
                 statusBarTouchableRegionManager,
-                flashlightController);
-                tunerService,
+                flashlightController,
                 fodCircleViewImpl);
     }
 }

@@ -878,8 +878,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             DismissCallbackRegistry dismissCallbackRegistry,
             Lazy<NotificationShadeDepthController> notificationShadeDepthControllerLazy,
             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
-            FlashlightController flashlightController),
-            TunerService tunerService,
+            FlashlightController flashlightController,
             FODCircleViewImpl fodCircleViewImpl) {
         super(context);
         mNotificationsController = notificationsController;
@@ -958,7 +957,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         mIconPolicy = phoneStatusBarPolicy;
         mDismissCallbackRegistry = dismissCallbackRegistry;
         mFlashlightController = flashlightController;
-        mTunerService = tunerService;
         mFODCircleViewImpl = fodCircleViewImpl;
 
         mBubbleExpandListener =

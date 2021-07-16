@@ -269,6 +269,7 @@
 
     <!-- Docked misalignment message -->
     <color name="misalignment_text_color">#F28B82</color>
-
     <color name="screenrecord_status_color">#E94235</color>
+
+    <dimen name="fod_animation_size">280dp</dimen>    
 </resources>
