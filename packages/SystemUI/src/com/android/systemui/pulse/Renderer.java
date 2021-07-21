@@ -32,7 +32,7 @@ public abstract class Renderer implements VisualizerStreamHandler.Listener {
     protected ColorController mColorController;
     protected boolean mIsValidStream;
 
-    private static final long ANIM_FPS_MAX = 40;
+    private static final long ANIM_FPS_MAX = 48;
     private static final long ANIM_FPS_TO_MILLIS = 1000 / ANIM_FPS_MAX;
     private long mCurrentTime;
     private long mRenderCounter;

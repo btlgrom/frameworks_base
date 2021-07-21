@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
+import android.view.animation.LinearInterpolator;
 
 import androidx.core.graphics.ColorUtils;
 
@@ -93,7 +94,8 @@ public class SolidLineRenderer extends Renderer {
                 j = i * 4 + 1;
             }
             mValueAnimators[i] = new ValueAnimator();
-            mValueAnimators[i].setDuration(128);
+            mValueAnimators[i].setInterpolator(new LinearInterpolator());
+            mValueAnimators[i].setDuration(96);
             mValueAnimators[i].addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {

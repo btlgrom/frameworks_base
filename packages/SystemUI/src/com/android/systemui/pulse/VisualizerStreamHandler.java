@@ -135,7 +135,7 @@ public class VisualizerStreamHandler {
                 };
 
                 mVisualizer.setDataCaptureListener(captureListener,
-                        (int) (Visualizer.getMaxCaptureRate() * 0.75), ENABLE_WAVEFORM, true);
+                        (int) (Visualizer.getMaxCaptureRate() / 3), ENABLE_WAVEFORM, true);
 
             }
             mVisualizer.setEnabled(true);
