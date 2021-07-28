@@ -24,15 +24,15 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.LayoutTransition;
-import android.animation.LayoutTransition.TransitionListener;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
 import android.app.Notification;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -40,6 +40,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Outline;
 import android.graphics.PixelFormat;
@@ -48,13 +50,16 @@ import android.graphics.Region;
 import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.media.MediaActionSound;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.UserHandle;
 import android.os.ServiceManager;
-import android.os.SystemProperties;
+import android.os.UserHandle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -66,7 +71,6 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceControl;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +87,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.internal.logging.UiEventLogger;
-import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
@@ -182,7 +185,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
     private static final long SCREENSHOT_DISMISS_ALPHA_OFFSET_MS = 50; // delay before starting fade
     private static final float SCREENSHOT_ACTIONS_START_SCALE_X = .7f;
     private static final float ROUNDED_CORNER_RADIUS = .05f;
-    private static final int SCREENSHOT_CORNER_DEFAULT_TIMEOUT_MILLIS = 3000;
+    private static final int SCREENSHOT_CORNER_DEFAULT_TIMEOUT_MILLIS = 2000;
     private static final int MESSAGE_CORNER_TIMEOUT = 2;
 
     private final Interpolator mAccelerateInterpolator = new AccelerateInterpolator();
@@ -198,7 +201,6 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
     private final DisplayMetrics mDisplayMetrics;
 
     private View mScreenshotLayout;
-    private LinearLayout mScreenshotButtonsLayout;
     private ScreenshotSelectorView mScreenshotSelectorView;
     private ImageView mScreenshotAnimatedView;
     private ImageView mScreenshotPreview;
@@ -207,8 +209,6 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
     private HorizontalScrollView mActionsContainer;
     private LinearLayout mActionsView;
     private ImageView mBackgroundProtection;
-    private View mCaptureButton;
-    private View mCancelButton;
     private FrameLayout mDismissButton;
 
     private Bitmap mScreenBitmap;
@@ -225,12 +225,10 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
     private float mCornerSizeX;
     private float mDismissDeltaY;
 
-    private MediaActionSound mCameraSound;
+    private Ringtone mScreenshotSound;
     private AudioManager mAudioManager;
     private Vibrator mVibrator;
 
-    private CameraManager mCameraManager;
-    private int mCamsInUse = 0;
 
     private int mNavMode;
     private int mLeftInset;
@@ -287,6 +285,9 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         }
     }
 
+    /**
+     * @param context everything needs a context :(
+     */
     @Inject
     public GlobalScreenshot(
             Context context, @Main Resources resources,
@@ -329,16 +330,9 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         mFastOutSlowIn =
                 AnimationUtils.loadInterpolator(mContext, android.R.interpolator.fast_out_slow_in);
 
-        // Setup the Camera shutter sound
-        mCameraSound = new MediaActionSound();
-        mCameraSound.load(MediaActionSound.SHUTTER_CLICK);
-
-        // Grab system services needed for screenshot sound
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-        mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        mCameraManager.registerAvailabilityCallback(mCamCallback,
-                new Handler(Looper.getMainLooper()));
+        // Setup the Screenshot sound
+        mScreenshotSound = RingtoneManager.getRingtone(mContext,
+                    Uri.parse("file://" + "/product/media/audio/ui/camera_click.ogg"));
 
         // Store UI background executor
         mUiBgExecutor = uiBgExecutor;
@@ -351,6 +345,10 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
 
         // Initialize current foreground package name
         mTaskListener.onTaskStackChanged();
+
+        // Grab system services needed for screenshot sound
+        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override // ViewTreeObserver.OnComputeInternalInsetsListener
@@ -382,6 +380,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
 
     void takeScreenshotFullscreen(Consumer<Uri> finisher, Runnable onComplete) {
         mOnCompleteRunnable = onComplete;
+
         mDisplay.getRealMetrics(mDisplayMetrics);
 
         try {
@@ -417,64 +416,6 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         }
     }
 
-    void hideScreenshotSelector() {
-        setLockedScreenOrientation(false);
-        mWindowManager.removeView(mScreenshotLayout);
-        mScreenshotSelectorView.stopSelection();
-        mScreenshotSelectorView.setVisibility(View.GONE);
-        mCaptureButton.setVisibility(View.GONE);
-        setBlockedGesturalNavigation(false);
-    }
-
-    void setBlockedGesturalNavigation(boolean blocked) {
-        IStatusBarService service = IStatusBarService.Stub.asInterface(
-                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
-        if (service != null) {
-            try {
-                service.setBlockedGesturalNavigation(blocked);
-            } catch (RemoteException e) {
-                // end of the world
-            }
-        }
-    }
-
-    void setLockedScreenOrientation(boolean locked) {
-        mWindowLayoutParams.screenOrientation = locked
-                ? ActivityInfo.SCREEN_ORIENTATION_LOCKED
-                : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    }
-
-    Rect getRotationAdjustedRect(Rect rect) {
-        Display defaultDisplay = mWindowManager.getDefaultDisplay();
-        Rect adjustedRect = new Rect(rect);
-
-        mDisplay.getRealMetrics(mDisplayMetrics);
-        int rotation = defaultDisplay.getRotation();
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                // properly rotated
-                break;
-            case Surface.ROTATION_90:
-                adjustedRect.top = mDisplayMetrics.heightPixels - rect.bottom;
-                adjustedRect.bottom = mDisplayMetrics.heightPixels - rect.top;
-                break;
-            case Surface.ROTATION_180:
-                adjustedRect.left = mDisplayMetrics.widthPixels - rect.right;
-                adjustedRect.top = mDisplayMetrics.heightPixels - rect.bottom;
-                adjustedRect.right = mDisplayMetrics.widthPixels - rect.left;
-                adjustedRect.bottom = mDisplayMetrics.heightPixels - rect.top;
-                break;
-            case Surface.ROTATION_270:
-                adjustedRect.left = mDisplayMetrics.widthPixels - rect.right;
-                adjustedRect.right = mDisplayMetrics.widthPixels - rect.left;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown rotation: " + rotation);
-        }
-
-        return adjustedRect;
-    }
-
     /**
      * Displays a screenshot selector
      */
@@ -488,39 +429,32 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         dismissScreenshot("new screenshot requested", true);
         mOnCompleteRunnable = onComplete;
 
-        setBlockedGesturalNavigation(true);
-        setLockedScreenOrientation(true);
         mWindowManager.addView(mScreenshotLayout, mWindowLayoutParams);
-        mScreenshotSelectorView.setSelectionListener((rect, firstSelection) -> {
-            if (firstSelection) {
-                mScreenshotLayout.post(() -> mCaptureButton.setVisibility(View.VISIBLE));
-            }
-        });
-        mCancelButton.setOnClickListener(v -> {
-            mScreenshotLayout.post(() -> {
-                finisher.accept(null);
-                hideScreenshotSelector();
-            });
-        });
-        mCaptureButton.setOnClickListener(v -> {
-            Rect rect = mScreenshotSelectorView.getSelectionRect();
-            final Rect adjustedRect = getRotationAdjustedRect(rect);
-            LayoutTransition layoutTransition = mScreenshotButtonsLayout.getLayoutTransition();
-            layoutTransition.addTransitionListener(new TransitionListener() {
-                @Override
-                public void startTransition(LayoutTransition transition, ViewGroup container,
-                        View view, int transitionType) {
-                }
+        mScreenshotSelectorView.setOnTouchListener((v, event) -> {
+            ScreenshotSelectorView view = (ScreenshotSelectorView) v;
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    view.startSelection((int) event.getX(), (int) event.getY());
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    view.updateSelection((int) event.getX(), (int) event.getY());
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    view.setVisibility(View.GONE);
+                    mWindowManager.removeView(mScreenshotLayout);
+                    final Rect rect = view.getSelectionRect();
+                    if (rect != null) {
+                        if (rect.width() != 0 && rect.height() != 0) {
+                            // Need mScreenshotLayout to handle it after the view disappears
+                            mScreenshotLayout.post(() -> takeScreenshotInternal(finisher, rect));
+                        }
+                    }
 
-                @Override
-                public void endTransition(LayoutTransition transition, ViewGroup container,
-                        View view, int transitionType) {
-                    takeScreenshotInternal(finisher, adjustedRect);
-                    transition.removeTransitionListener(this);
-                    playShutterSound();
-                }
-            });
-            mScreenshotLayout.post(() -> hideScreenshotSelector());
+                    view.stopSelection();
+                    return true;
+            }
+
+            return false;
         });
         mScreenshotLayout.post(() -> {
             mScreenshotSelectorView.setVisibility(View.VISIBLE);
@@ -532,9 +466,13 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
      * Cancels screenshot request
      */
     void stopScreenshot() {
-        // If the selector layer still presents on screen, we hide it.
-        if (mScreenshotLayout.getParent() != null) {
-            hideScreenshotSelector();
+        // If the selector layer still presents on screen, we remove it and resets its state.
+        if (mScreenshotSelectorView.getSelectionRect() != null) {
+            try {
+                mWindowManager.removeView(mScreenshotLayout);
+                mScreenshotSelectorView.stopSelection();
+            } catch (IllegalArgumentException ignored) {
+            }
         }
     }
 
@@ -629,7 +567,6 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
 
         // Inflate the screenshot layout
         mScreenshotLayout = LayoutInflater.from(mContext).inflate(R.layout.global_screenshot, null);
-        mScreenshotButtonsLayout = mScreenshotLayout.findViewById(R.id.global_screenshot_buttons);
         // TODO(159460485): Remove this when focus is handled properly in the system
         mScreenshotLayout.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_OUTSIDE) {
@@ -687,8 +624,6 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         mActionsView = mScreenshotLayout.findViewById(R.id.global_screenshot_actions);
         mBackgroundProtection = mScreenshotLayout.findViewById(
                 R.id.global_screenshot_actions_background);
-        mCaptureButton = mScreenshotLayout.findViewById(R.id.global_screenshot_selector_capture);
-        mCancelButton = mScreenshotLayout.findViewById(R.id.global_screenshot_selector_cancel);
         mDismissButton = mScreenshotLayout.findViewById(R.id.global_screenshot_dismiss_button);
         mDismissButton.setOnClickListener(view -> {
             mUiEventLogger.log(ScreenshotEvent.SCREENSHOT_EXPLICIT_DISMISSAL);
@@ -717,6 +652,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
      * Takes a screenshot of the current display and shows an animation.
      */
     private void takeScreenshotInternal(Consumer<Uri> finisher, Rect crop) {
+
         // Dismiss the old screenshot first to prevent it from showing up in the new screenshot
         dismissScreenshot("new screenshot requested", true);
 
@@ -914,50 +850,5 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         }
 
         return matchWithinTolerance;
-    }
-
-    private void playShutterSound() {
-        boolean playSound = readCameraSoundForced() && mCamsInUse > 0;
-
-        switch (mAudioManager.getRingerMode()) {
-            case AudioManager.RINGER_MODE_SILENT:
-                // do nothing
-                break;
-            case AudioManager.RINGER_MODE_VIBRATE:
-                if (mVibrator != null && mVibrator.hasVibrator()) {
-                    mVibrator.vibrate(VibrationEffect.createOneShot(50,
-                            VibrationEffect.DEFAULT_AMPLITUDE));
-                }
-                break;
-            case AudioManager.RINGER_MODE_NORMAL:
-                // in this case we want to play sound even if not forced on
-                playSound = true;
-                break;
-        }
-
-        // We want to play the shutter sound when it's either forced or
-        // when we use normal ringer mode
-        if (playSound) {
-            mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
-        }
-    }
-
-    private CameraManager.AvailabilityCallback mCamCallback =
-            new CameraManager.AvailabilityCallback() {
-        @Override
-        public void onCameraOpened(String cameraId, String packageId) {
-            mCamsInUse++;
-        }
-
-        @Override
-        public void onCameraClosed(String cameraId) {
-            mCamsInUse--;
-        }
-    };
-
-    private boolean readCameraSoundForced() {
-        return SystemProperties.getBoolean("audio.camerasound.force", false) ||
-                mContext.getResources().getBoolean(
-                        com.android.internal.R.bool.config_camera_sound_forced);
     }
 }
